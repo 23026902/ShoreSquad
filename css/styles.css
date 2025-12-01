@@ -231,7 +231,108 @@ a:hover, a:focus {
   animation: fadeInRight 1s ease-out;
 }
 
-/* Map Placeholder */
+/* Map Container */
+.map-container {
+  width: 100%;
+  height: 400px;
+  position: relative;
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+  box-shadow: var(--shadow-lg);
+}
+
+.leaflet-map {
+  width: 100%;
+  height: 100%;
+  border-radius: var(--radius-xl);
+}
+
+/* Custom marker styles */
+.custom-marker {
+  background: var(--coral-bright);
+  border: 3px solid var(--white);
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  box-shadow: var(--shadow-lg);
+  animation: pulse 2s infinite;
+}
+
+.custom-popup {
+  font-family: var(--font-primary);
+}
+
+.custom-popup h3 {
+  color: var(--ocean-deep);
+  margin-bottom: var(--spacing-sm);
+  font-size: 1.1rem;
+}
+
+.custom-popup p {
+  margin-bottom: var(--spacing-xs);
+  color: var(--gray-600);
+  font-size: 0.9rem;
+}
+
+.popup-button {
+  background: var(--ocean-deep);
+  color: var(--white);
+  border: none;
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  font-size: 0.85rem;
+  margin-top: var(--spacing-sm);
+  transition: background var(--transition-fast);
+}
+
+.popup-button:hover {
+  background: var(--ocean-medium);
+}
+
+.map-overlay {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  z-index: 10;
+  pointer-events: none;
+}
+
+.cleanup-pin {
+  background: var(--coral-bright);
+  color: var(--white);
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  animation: pulsePin 2s infinite;
+  font-weight: var(--font-weight-medium);
+  font-size: 0.9rem;
+}
+
+.pin-icon {
+  font-size: 1.2rem;
+  animation: bounce 2s infinite;
+}
+
+@keyframes pulsePin {
+  0%, 100% { 
+    transform: scale(1);
+    box-shadow: var(--shadow-lg);
+  }
+  50% { 
+    transform: scale(1.05);
+    box-shadow: var(--shadow-xl);
+  }
+}
+
+/* Map Placeholder - Legacy styles for fallback */
 .map-placeholder {
   width: 100%;
   height: 400px;
@@ -532,6 +633,20 @@ a:hover, a:focus {
   
   .hero-actions {
     justify-content: center;
+  }
+  
+  .map-container {
+    height: 300px;
+  }
+  
+  .leaflet-map {
+    height: 300px;
+  }
+  
+  .custom-marker {
+    width: 25px;
+    height: 25px;
+    font-size: 14px;
   }
   
   .map-placeholder {

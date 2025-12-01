@@ -13,6 +13,8 @@ class ShoreSquadApp {
     this.weatherAPI = 'https://api.openweathermap.org/data/2.5';
     this.apiKey = 'YOUR_API_KEY_HERE'; // Replace with actual API key
     this.currentLocation = null;
+    this.map = null;
+    this.cleanupMarker = null;
     
     this.init();
   }
@@ -22,6 +24,7 @@ class ShoreSquadApp {
     this.setupEventListeners();
     this.loadSavedData();
     this.hideLoadingScreen();
+    this.initializeMap();
     this.getCurrentLocation();
     this.loadSampleData();
   }
@@ -116,6 +119,58 @@ class ShoreSquadApp {
     this.updateMapLocation();
   }
 
+  // Initialize Leaflet map
+  initializeMap() {
+    // Pasir Ris Beach coordinates
+    const pasirRisLat = 1.381497;
+    const pasirRisLng = 103.955574;
+    
+    // Initialize map centered on Pasir Ris
+    this.map = L.map('map').setView([pasirRisLat, pasirRisLng], 15);
+    
+    // Add OpenStreetMap tiles
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '© OpenStreetMap contributors',
+      maxZoom: 18,
+    }).addTo(this.map);
+    
+    // Create custom marker for cleanup location
+    const cleanupIcon = L.divIcon({
+      html: '<div class="custom-marker">🏖️</div>',
+      className: 'custom-div-icon',
+      iconSize: [30, 30],
+      iconAnchor: [15, 15]
+    });
+    
+    // Add marker with popup
+    this.cleanupMarker = L.marker([pasirRisLat, pasirRisLng], {icon: cleanupIcon})
+      .addTo(this.map)
+      .bindPopup(`
+        <div class="custom-popup">
+          <h3>🏖️ Pasir Ris Beach</h3>
+          <p><strong>📍 Next Cleanup Location</strong></p>
+          <p>📅 Coordinates: ${pasirRisLat}, ${pasirRisLng}</p>
+          <p>🌊 Perfect spot for beach cleanup!</p>
+          <button class="popup-button" onclick="getDirections()">Get Directions</button>
+        </div>
+      `, {
+        maxWidth: 250,
+        className: 'custom-popup-wrapper'
+      });
+    
+    // Open popup by default
+    this.cleanupMarker.openPopup();
+    
+    // Add some styling to map controls
+    setTimeout(() => {
+      const mapControls = document.querySelectorAll('.leaflet-control');
+      mapControls.forEach(control => {
+        control.style.borderRadius = 'var(--radius-md)';
+        control.style.boxShadow = 'var(--shadow-md)';
+      });
+    }, 100);
+  }
+
   // Weather functionality
   async loadWeatherData() {
     if (!this.currentLocation) return;
@@ -159,16 +214,24 @@ class ShoreSquadApp {
 
   // Map functionality
   updateMapLocation() {
-    const mapElement = document.getElementById('map');
-    if (mapElement && this.currentLocation) {
-      mapElement.innerHTML = `
-        <p>📍 Current Location</p>
-        <div class="map-pin">🏖️</div>
-        <p style="font-size: 0.9rem; margin-top: 10px;">
-          Lat: ${this.currentLocation.lat.toFixed(4)}, 
-          Lng: ${this.currentLocation.lng.toFixed(4)}
-        </p>
-      `;
+    if (this.map && this.currentLocation) {
+      // Add user location marker if different from cleanup location
+      const userIcon = L.divIcon({
+        html: '<div class="custom-marker" style="background: var(--ocean-deep);">📍</div>',
+        className: 'custom-div-icon',
+        iconSize: [25, 25],
+        iconAnchor: [12.5, 12.5]
+      });
+      
+      L.marker([this.currentLocation.lat, this.currentLocation.lng], {icon: userIcon})
+        .addTo(this.map)
+        .bindPopup(`
+          <div class="custom-popup">
+            <h3>📍 Your Location</h3>
+            <p>Lat: ${this.currentLocation.lat.toFixed(4)}</p>
+            <p>Lng: ${this.currentLocation.lng.toFixed(4)}</p>
+          </div>
+        `);
     }
   }
 
@@ -476,6 +539,17 @@ function joinSquad() {
 
 function createCleanup() {
   shoreSquad.createCleanup();
+}
+
+function showLocationDetails() {
+  shoreSquad.showToast('📍 Pasir Ris Beach - Perfect for beach cleanup! 🏖️', 4000);
+}
+
+function getDirections() {
+  const coordinates = '1.381497,103.955574';
+  const mapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${coordinates}`;
+  window.open(mapsUrl, '_blank');
+  shoreSquad.showToast('Opening directions to Pasir Ris Beach! 🗺️');
 }
 
 // Performance optimizations
